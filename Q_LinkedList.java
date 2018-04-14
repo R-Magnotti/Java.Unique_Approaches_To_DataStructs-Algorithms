@@ -1,8 +1,8 @@
 /*#####################################################################################################################
 #                                          Queue|Linked List
-#                                          Author: Richie Magnotti
+#                                          Author: Richard Magnotti
 #
-# Goal of code is to implement a queue via a linked list
+# Goal of code is to implement a queue via a linked list -- and reverse it recursively!
 ######################################################################################################################*/
 
 /*#####################################################################################################################
@@ -57,9 +57,8 @@ class Q
             tail.prev = temp;
             tail.prev.next = tail; //to establish 2 way relationship
 
-            System.out.print("Linked list at each step: ");
+            System.out.print("LL after adding " + tail.data + " is: ");
             printLL(tail);
-            System.out.println("The unchanging head value should be " + head.data);
             System.out.println();
         }
         //method to print the linked list recursively
@@ -81,17 +80,15 @@ class Q
             {
                 if (head != tail) //if >1 Node left in LL
                 {
-                    System.out.println("Node being removed " + head.data);
+                    //System.out.println("Node being removed " + head.data);
                     Node temp = head;
                     head = head.next;
                     head.prev = null;
-                    System.out.println("LL after dequeueing is ");
-                    printLL(tail);
                     return temp;
                 }
                 else //if <1 Node left in LL
                 {
-                    System.out.println("Node being removed " + head.data);
+                    //System.out.println("Node being removed " + head.data);
                     head = null;
                 }
                 return head;
@@ -102,6 +99,29 @@ class Q
                 System.out.println("Q is empty!");
                 return null;
             }
+        }
+        //want to reverse the queue using only standard operations using only original queue -- enQ, deQ, and isEmpty
+        //approach: to dequeue before recursive call and enqueue after call (tail end) -- thus reversing the order of the initial queue
+        //VISUAL OF PROCESS FOR RECURSIVE FUNC:
+        //e.g. original linked list -                           [a|]-[b|]-[c|]-[d|]-[e|]-[f|]
+        //e.g. deQ node and store locally -                     [e|]-[f|], temp = [d|]
+        //e.g. enQ node in reverse order bc TAIL recursion -    [f|]-[e|]-[d|]
+        //e.g. final linked list -                              [f|]-[e|]-[d|]-[c|]-[b|]-[a|]
+        //time: O(n)
+        void revQ()
+        {
+            //because we dequeue via the head, the head should always have a next Node until it's the last in the queue
+            if (head.next == null)
+            {
+                return;
+            }
+
+            Node temp = deQ();
+            System.out.print("LL after removing " + temp.data + " is: ");
+            printLL(tail);
+            System.out.println();
+            revQ();
+            enQ(temp.data);
         }
     }
     //main driver method to test all classes/methods/implement the queue
@@ -114,14 +134,16 @@ class Q
         {
             q.enQ(A[i]);
         }
-        System.out.println("Getting rid of first node in the queue " + q.deQ().data);
-        System.out.println("Getting rid of second node in the queue " + q.deQ().data);
-        q.deQ();
-        q.deQ();
-        q.deQ();
-        q.deQ();
-        q.deQ();
-        q.deQ();
-        System.out.println(q.isEmpty());
+        System.out.println("-----------------------------------------------------------------------------------");
+        //following deQ should leave us with [47|]-[34|]-[1|]-[34|]-[76|]-[3|]-[4|]
+        System.out.println("Getting rid of first node in the queue " + q.deQ().data + " we are left with:");
+        q.printLL(q.tail);
+        System.out.println();
+        System.out.println("-----------------------------------------------------------------------------------");
+        System.out.println("Starting to reverse the queue: ");
+        q.revQ();
+        System.out.println("-----------------------------------------------------------------------------------");
+        System.out.println("\nFinal queue after being reversed:");
+        q.printLL(q.tail);
     }
 }
